@@ -22,7 +22,7 @@ module Reg (Target : Target) = struct
 
   let imm width x = match Imm.to_word ~width:8 x with
     | None -> invalid_arg "imm8 must fit into 8 bits"
-    | Some x -> Bil.(cast high width (int x mod (width %: 8)))
+    | Some x -> Bil.(cast unsigned width (int x mod (width %: 8)))
 
   let reg width x =
     let x = match width with
@@ -37,7 +37,7 @@ module Reg (Target : Target) = struct
   let nothing = None
   let flipped = Some (fun x bit -> Bil.(x lxor bit))
   let one = Some (fun x bit -> Bil.(x lor bit))
-  let zero = Some (fun x bit -> Bil.(x land lnot bit))
+  let zero = Some (fun x bit -> Bil.(x land (lnot bit)))
 
   (* set one 32 r imm x *)
   let set how width reg typ x =

@@ -20,33 +20,31 @@ module Lifter (Target : Target) = struct
     | Some op -> Ok [Bil.special "unsupported instruction"]
     | None -> lift mem insn
 
-  let lift insns : obil list =
+  let lift_insns insns : obil list =
     let rec process acc = function
       | [] -> (List.rev acc)
       | (mem,x) :: xs -> match Decode.prefix x with
         | None ->
           let bil = match lift mem x with
-            | Error _ as err -> [err]
-            | Ok bil -> [Ok bil] in
-          process bil xs
+            | Error _ as err -> err
+            | Ok bil -> Ok bil in
+          process (bil::acc) xs
         | Some pre -> match xs with
           | [] ->
-            let bil = [error "trail prefix" pre Opcode.sexp_of_prefix] in
-            process bil []
-          | (mem',y) :: xs ->
-            let bil = match Memory.merge mem mem' with
-              | Error _ ->
-                [error "lost a stem after" pre Opcode.sexp_of_prefix]
-              | Ok mem -> match lift mem y with
-                | Error _ as err -> [err]
-                | Ok bil -> match pre with
-                  | `REP_PREFIX -> [Ok [Bil.(while_ (var CPU.zf) bil)]]
-                  | `REPNE_PREFIX ->
-                    [Ok [Bil.(while_ (lnot (var CPU.zf)) bil)]]
-                  | `LOCK_PREFIX -> [Ok (Bil.special "lock" :: bil)]
-                  | `DATA16_PREFIX -> [Ok (Bil.special "data16" :: bil)]
-                  | `REX64_PREFIX -> [Ok (Bil.special "rex64" :: bil)] in
-            process bil xs in
+            let bil = error "trail prefix" pre Opcode.sexp_of_prefix in
+            process (bil::acc) []
+          | (mem,y) :: xs ->
+            let bil = match lift mem y with
+              | Error _ as err -> err
+              | Ok bil -> match pre with
+                | `REP_PREFIX ->
+                  Ok [Bil.(while_ (var CPU.zf) bil)]
+                | `REPNE_PREFIX ->
+                  Ok [Bil.(while_ (lnot (var CPU.zf)) bil)]
+                | `LOCK_PREFIX -> Ok (Bil.special "lock" :: bil)
+                | `DATA16_PREFIX -> Ok (Bil.special "data16" :: bil)
+                | `REX64_PREFIX -> Ok (Bil.special "rex64" :: bil) in
+            process (bil::acc) xs in
     process [] insns
 end
 
@@ -54,5 +52,5 @@ end
 module X32 = Lifter(IA32)
 module X64 = Lifter(AMD64)
 
-let x32 = X32.lift
-let x64 = X64.lift
+let x32 = X32.lift_insns
+let x64 = X64.lift_insns
