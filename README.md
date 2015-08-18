@@ -34,13 +34,13 @@ $ echo "\x48\xc7\xc3\x02\x00\x00\x00" | ./main.native
 
 ## Adding new instruction
 
-To add new instruction basically use `Blx` module. The framework is the following:
+To add new instruction basically use `Blx` module as an example. 
+The framework is the following:
 
 1. Use `llvm-mc and `X86Instr*.td` files in LLVM distribution to
    reverse engineer the llvm disassembly of the instruction you're
    going to add.
 2. For each LLVM opcode add equally named polymorphic
    variant. Finally, add the newly formed type to `Opcode.t`.
-
 3. In function `lift` (see `lift.ml`) add a case that matches with your set of
    variants, and pass the arguments to your own lifter.
