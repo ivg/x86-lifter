@@ -1,3 +1,5 @@
 PKG bap
+PKG x86_lifter
+S .
 B _build
 FLG -short-paths
