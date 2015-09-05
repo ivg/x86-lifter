@@ -17,10 +17,7 @@ let disasm data =
   Dis.store_asm >>| Dis.store_kinds >>| fun dis ->
   Dis.run dis mem ~return:ident ~init:()
     ~stopped:(fun s () ->
-        Dis.insns s |> List.filter_map ~f:(function
-            | (mem,None) ->
-              printf "Disasm failed: @.%a@." Memory.pp mem; None
-            | (mem,Some insn) -> Some (mem,insn)) |> Lift.x64 |>
+        Dis.insns s |> Lift.X64.lift_insns |>
         List.iter ~f:(function
             | Error err -> printf "Lifter failed: @.%a@." Error.pp err
             | Ok bil -> printf "%a@." Bil.pp bil))

@@ -1,0 +1,47 @@
+opam-version: "1.2"
+name: "x86_lifter"
+version: "master"
+maintainer: "Ivan Gotovchits <ivg@ieee.org>"
+authors: "BAP Team, Kenneth Adam Miller <kennethadammiller@gmail.com>"
+homepage: "https://github.com/ivg/x86-lifter/"
+bug-reports: "https://github.com/ivg/x86-lifter/issues"
+dev-repo: "git://github.com/ivg/x86-lifter/"
+license: "MIT"
+build: [
+  [make]
+]
+
+install: [
+  [make "install"]
+]
+
+remove: [
+  ["ocamlfind" "remove" "x86_lifter"]
+  ["rm" "-rf" "%{prefix}%/share/x86_lifter"]
+]
+
+depends: [
+    "bap"
+]
+
+depexts: [
+    [["ubuntu"] [
+        "libgmp-dev"
+        "libzip-dev"
+        "libcurl4-gnutls-dev"
+        "llvm-3.4-dev"
+        "time"
+        "clang"
+        "llvm"
+        "m4"
+     ]]
+     [["osx" "macports"] [
+        "gmp"
+        "llvm-3.4"
+        "graphviz"
+        "curl"
+        "libzip"
+     ]
+    ]
+]
+available: [ocaml-version >= "4.01.0"]

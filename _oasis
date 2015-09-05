@@ -1,0 +1,37 @@
+OASISFormat: 0.4
+Name:        x86_lifter
+Version:     0.1
+Synopsis:    A lifter for the x86 and x64 architectures.
+Authors:     Ivan Gotovchits <ivg@ieee.org>, Kenneth Adam Miller <kennethadammiller@gmail.com>
+Maintainers: Ivan Gotovchits <ivg@ieee.org>, Kenneth Adam Miller <kennethadammiller@gmail.com>
+License:     MIT
+Plugins:     META (0.4)
+AlphaFeatures: ocamlbuild_more_args
+BuildTools: ocamlbuild, camlp4o
+XOCamlbuildExtraArgs: -j 5
+BuildDepends:
+              bin_prot.syntax,
+              camlp4,
+              comparelib.syntax,
+              core_kernel,
+              enumerate.syntax,
+              faillib.syntax,
+              fieldslib.syntax,
+              herelib.syntax,
+              pa_ounit.syntax,
+              sexplib.syntax,
+              variantslib.syntax
+
+Library x86_lifter
+  Path:           .
+  Install:        true
+  Modules:	  Lift, Btx, Opcode, Decode, Env, Types
+  CompiledObject: best
+  BuildDepends:   core_kernel, bap, bap.plugins, bap.serialization, threads
+
+Executable test_lifter
+  Path:           .
+  MainIs:         main.ml
+  Install:        false
+  BuildDepends:   core_kernel, bap, bap.plugins, bap.serialization, threads
+  CompiledObject: best
